@@ -1,6 +1,6 @@
 import mysql from 'mysql2/promise'
 
-// Cria a conexão (função assíncrona)
+// Cria a conexão com o banco (função assíncrona)
 const con = await mysql.createConnection({
     host: process.env.MYSQL_HOST,
     user: process.env.MYSQL_USER,
