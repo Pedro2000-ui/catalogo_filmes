@@ -1,4 +1,4 @@
-import { alterarImagem, inserirFilme } from '../repository/filmeRepository.js'
+import { alterarImagem, inserirFilme, listarFilme, listarFilmes, listarFilmesPorNome } from '../repository/filmeRepository.js'
 
 // Biblioteca utilizada para trabalhar com imagens enviadas pelos endpoints
 import multer from 'multer'
@@ -10,11 +10,11 @@ const server = Router();
 const upload = multer({ dest: 'storage/capasFilmes' })
 
 
-server.post('/filme', async(req, resp) => {
+server.post('/filme', async (req, resp) => {
     try {
         const novoFilme = req.body
 
-        if (!novoFilme.nome) 
+        if (!novoFilme.nome)
             throw new Error('Obrigatório preencher o nome');
         if (!novoFilme.sinopse)
             throw new Error('Obrigatório preencher a sinopse');
@@ -43,17 +43,60 @@ server.post('/filme', async(req, resp) => {
  / ('capa') = nome do campo que virá a imagem, quando anexarmos e enviados pelo endpoint
 */
 
-server.put('/filme/:id/capa', upload.single('capa'), async(req, resp) => {
+server.put('/filme/:id/capa', upload.single('capa'), async (req, resp) => {
     try {
         const { id } = req.params;
         const img = req.file.path;
         const retorno = await alterarImagem(img, id);
-        
-        if(retorno != 1) 
+
+        if (retorno != 1)
             throw new Error("Erro ao alterar imagem.")
-        
+
         resp.status(204).send();
 
+    } catch (err) {
+        resp.status(400).send({
+            erro: err.message
+        })
+    }
+})
+
+server.get('/filme', async (req, resp) => {
+    try {
+        const retorno = await listarFilmes();
+        resp.send(retorno);
+    } catch (err) {
+        resp.status(400).send({
+            erro: err.message
+        })
+    }
+})
+
+server.get('/filme/busca', async (req, resp) => {
+    try {
+        const { nome } = req.query
+
+        const retorno = await listarFilmesPorNome(nome)
+        if (retorno.length == 0)
+            resp.status(404).send([])
+        else 
+            resp.send(retorno);
+    } catch (err) {
+        resp.status(400).send({
+            erro: err.message
+        })
+    }
+})
+
+server.get('/filme/:id', async (req, resp) => {
+    try {
+        const { id } = req.params
+
+        const retorno = await listarFilme(id);
+        if (!retorno)
+            resp.status(404).send([])
+        else 
+            resp.send(retorno);
     } catch (err) {
         resp.status(400).send({
             erro: err.message

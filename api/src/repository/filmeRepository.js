@@ -2,7 +2,7 @@ import { con } from "./connection.js";
 
 export async function inserirFilme(filme) {
     const strSQL =
-        `
+    `
         INSERT INTO 
             tb_filme (
                 id_usuario,
@@ -37,7 +37,7 @@ export async function inserirFilme(filme) {
 
 export async function alterarImagem(imagem, id) {
     const strSQL =
-        `
+    `
         UPDATE 
             tb_filme
         SET 
@@ -48,4 +48,58 @@ export async function alterarImagem(imagem, id) {
 
     const [resposta] = await con.query(strSQL, [imagem, id]);
     return resposta.affectedRows;
+}
+
+export async function listarFilmes() {
+    const strSQL =
+    `
+        SELECT
+	        id_filme id,
+            nm_filme nome,
+            vl_avaliacao avaliacao,
+            dt_lancamento lancamento,
+            bt_disponivel disponivel
+        FROM
+	        tb_filme;
+    `
+    const [filmes] = await con.query(strSQL);
+    return filmes;
+}
+
+export async function listarFilme(id) {
+    const strSQL =
+    `
+        SELECT
+            id_filme id,
+            nm_filme nome,
+            ds_sinopse sinopse,
+            vl_avaliacao avaliacao,
+            dt_lancamento lancamento,
+            bt_disponivel disponivel,
+            img_filme capa
+        FROM
+            tb_filme
+        WHERE
+            id_filme = ?;
+    `
+    const [filme] = await con.query(strSQL, [id]);
+    return filme[0];
+}
+
+export async function listarFilmesPorNome(nome) {
+    const strSQL =
+    `
+        SELECT
+            id_filme id,
+            nm_filme nome,
+            vl_avaliacao avaliacao,
+            dt_lancamento lancamento,
+            bt_disponivel disponivel
+        FROM
+            tb_filme
+        WHERE
+            nm_filme like ?;
+    `
+    const [filmes] = await con.query(strSQL, [`%${nome}%`]);
+    return filmes;
 }
