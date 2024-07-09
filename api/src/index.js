@@ -14,6 +14,9 @@ server.use(cors());
 // Ativa a opção para que os parâmetros de corpo da requisição possam ser enviados no formato json
 server.use(express.json());
 
+// liberar arquivos da storage (para que possamos puxar os arquivos que salvamos)
+server.use('/storage/capasFilmes', express.static('storage/capasFilmes'));
+
 // Config dos endpoints
 server.use(usuarioController);
 server.use(filmeController);
