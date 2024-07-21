@@ -58,7 +58,8 @@ export async function listarFilmes() {
             nm_filme nome,
             vl_avaliacao avaliacao,
             dt_lancamento lancamento,
-            bt_disponivel disponivel
+            bt_disponivel disponivel,
+            id_usuario      usuario
         FROM
 	        tb_filme;
     `
@@ -70,13 +71,14 @@ export async function listarFilme(id) {
     const strSQL =
     `
         SELECT
-            id_filme id,
-            nm_filme nome,
-            ds_sinopse sinopse,
-            vl_avaliacao avaliacao,
-            dt_lancamento lancamento,
-            bt_disponivel disponivel,
-            img_filme capa
+            id_filme        id,
+            nm_filme        nome,
+            ds_sinopse      sinopse,
+            vl_avaliacao    avaliacao,
+            dt_lancamento   lancamento,
+            bt_disponivel   disponivel,
+            img_filme       capa,
+            id_usuario      usuario
         FROM
             tb_filme
         WHERE
@@ -94,7 +96,8 @@ export async function listarFilmesPorNome(nome) {
             nm_filme nome,
             vl_avaliacao avaliacao,
             dt_lancamento lancamento,
-            bt_disponivel disponivel
+            bt_disponivel disponivel,
+            id_usuario      usuario
         FROM
             tb_filme
         WHERE
@@ -112,5 +115,24 @@ export async function removerFilme(id) {
 
     `
     const [resposta] = await con.query(strSQL, [id]);
+    return resposta.affectedRows;
+}
+
+export async function alterarFilme(id, filme) {
+    const strSQL = 
+    `
+        UPDATE 
+            tb_filme
+        SET
+            nm_filme = ?,
+            ds_sinopse = ?,
+            vl_avaliacao = ?,
+            dt_lancamento = ?,
+            bt_disponivel = ?,
+            id_usuario = ?
+        WHERE
+            id_filme = ?;
+    `
+    const [resposta] = await con.query(strSQL, [filme.nome, filme.sinopse, filme.avaliacao, filme.lancamento, filme.disponivel, filme.usuario, id]);
     return resposta.affectedRows;
 }
