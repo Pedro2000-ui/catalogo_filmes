@@ -103,3 +103,14 @@ export async function listarFilmesPorNome(nome) {
     const [filmes] = await con.query(strSQL, [`%${nome}%`]);
     return filmes;
 }
+
+export async function removerFilme(id) {
+    const strSQL = 
+    `
+        DELETE FROM tb_filme
+            WHERE id_filme = ?
+
+    `
+    const [resposta] = await con.query(strSQL, [id]);
+    return resposta.affectedRows;
+}

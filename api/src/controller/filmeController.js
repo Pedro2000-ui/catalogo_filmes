@@ -1,4 +1,4 @@
-import { alterarImagem, inserirFilme, listarFilme, listarFilmes, listarFilmesPorNome } from '../repository/filmeRepository.js'
+import { alterarImagem, removerFilme, inserirFilme, listarFilme, listarFilmes, listarFilmesPorNome } from '../repository/filmeRepository.js'
 
 // Biblioteca utilizada para trabalhar com imagens enviadas pelos endpoints
 import multer from 'multer'
@@ -101,6 +101,21 @@ server.get('/filme/:id', async (req, resp) => {
         resp.status(400).send({
             erro: err.message
         })
+    }
+})
+
+server.delete('/filme/:id', async (req, resp) => {
+    try {
+        const {id} = req.params;
+
+        const resposta = await removerFilme(id);
+        if (resposta != 1)
+            throw new Error('Filme não pode ser removido');
+        resp.status(204).send();
+    } catch (err) {
+        resp.status(400).send({
+            erro: err.message
+        });
     }
 })
 
