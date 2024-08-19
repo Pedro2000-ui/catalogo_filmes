@@ -1,4 +1,4 @@
-import { alterarImagem, inserirFilme, listarFilme, listarFilmes, listarFilmesPorNome } from '../repository/filmeRepository.js'
+import { alterarImagem, removerFilme, inserirFilme, listarFilme, listarFilmes, listarFilmesPorNome, alterarFilme } from '../repository/filmeRepository.js'
 
 // Biblioteca utilizada para trabalhar com imagens enviadas pelos endpoints
 import multer from 'multer'
@@ -22,7 +22,7 @@ server.post('/filme', async (req, resp) => {
             throw new Error('Obrigatório preencher a avaliação');
         if (!novoFilme.lancamento)
             throw new Error('Obrigatório preencher a data de lançamento');
-        if (!novoFilme.disponivel)
+        if (novoFilme.disponivel == undefined)
             throw new Error('Obrigatório preencher o campo disponível');
         if (!novoFilme.usuario)
             throw new Error('Usuário não logado!');
@@ -98,6 +98,52 @@ server.get('/filme/:id', async (req, resp) => {
         else 
             resp.send(retorno);
     } catch (err) {
+        resp.status(400).send({
+            erro: err.message
+        })
+    }
+})
+
+server.delete('/filme/:id', async (req, resp) => {
+    try {
+        const {id} = req.params;
+
+        const resposta = await removerFilme(id);
+        if (resposta != 1)
+            throw new Error('Filme não pode ser removido');
+        resp.status(204).send();
+    } catch (err) {
+        resp.status(400).send({
+            erro: err.message
+        });
+    }
+})
+
+server.put('/filme/:id', async (req, resp) => {
+    try {
+        const {id} = req.params;
+        const filme = req.body;
+
+        if (!filme.nome)
+            throw new Error('Obrigatório preencher o nome');
+        if (!filme.sinopse)
+            throw new Error('Obrigatório preencher a sinopse');
+        if (!filme.avaliacao && filme.avaliacao != 0)
+            throw new Error('Obrigatório preencher a avaliação');
+        if (!filme.lancamento)
+            throw new Error('Obrigatório preencher a data de lançamento');
+        if (filme.disponivel == undefined)
+            throw new Error('Obrigatório preencher o campo disponível');
+        if (!filme.usuario)
+            throw new Error('Usuário não logado!');
+
+        const resposta = await alterarFilme(id, filme);
+        if (resposta != 1)
+            throw new Error('Filme não pode ser alterado');
+        resp.status(204).send();
+
+
+    } catch(err) {
         resp.status(400).send({
             erro: err.message
         })
